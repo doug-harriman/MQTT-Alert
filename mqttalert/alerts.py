@@ -60,8 +60,8 @@ class Alert:
         if email is not None:
             self.email = email
 
-        self._message_last_received = dt.datetime.now()
-        self._message_last_check = dt.datetime.now()
+        self._message_last_received = None
+        self._message_last_check = None
 
     def __repr__(self) -> str:
         return "Alert(" + self.__str__() + ")"
@@ -224,11 +224,15 @@ class Alert:
 
         # Got a message on our topic
         now = dt.datetime.now()
-        self._message_last_received = now
 
         # Check period min to see if we can ignore
-        if now - self.message_last_check < self.period_minimum:
-            return
+        if self.message_last_received:
+            self._message_last_received = now
+
+            if now - self.message_last_check < self.period_minimum:
+                return
+        else:
+            self._message_last_received = now
 
         # Check condition
         self._message_last_check = now
@@ -538,7 +542,7 @@ if __name__ == "__main__":
     # Add alert to manager
     alert_manager.add(
         Alert(
-            topic="device/#",
+            topic="device/home-office-tmp",
             email="5034490111@mms.att.net",
             condition="temperature < 33",
             period_minimum=dt.timedelta(hours=1),
@@ -548,7 +552,7 @@ if __name__ == "__main__":
 
     alert_manager.add(
         Alert(
-            topic="device/#",
+            topic="device/home-office-tmp",
             email="5034490111@mms.att.net",
             condition="temperature < 40",
             period_minimum=dt.timedelta(hours=4),
