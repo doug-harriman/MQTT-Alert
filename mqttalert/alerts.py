@@ -2,6 +2,7 @@
 # Tools for monitoring MQTT traffic and sending email alerts.
 
 import datetime as dt
+import json
 import logging
 import re
 
@@ -10,6 +11,7 @@ import re
 from mqtt import MqttMessage, Mqtt
 from gmail import Gmail
 
+# TODO: Load config from file.
 
 # These two need a separte time thread to check.
 # TODO: Heartbeat check (hours) - Send if message not received within time.
@@ -62,10 +64,10 @@ class Alert:
         self._message_last_check = dt.datetime.now()
 
     def __repr__(self) -> str:
-        return "Alert: " + self.__str__()
+        return "Alert(" + self.__str__() + ")"
 
     def __str__(self) -> str:
-        return f"{self.topic} {self.condition}"
+        return f"'{self.topic}','{self.condition}'"
 
     @property
     def period_minimum(self) -> dt.timedelta:
@@ -262,6 +264,74 @@ class Alert:
         )
         gmail.email_send(self.email, body, subject=subject)
 
+    def to_dict(self) -> dict:
+        """
+        Converts Alert object to dictionary representation.
+
+        Returns:
+            dict: Dictionary representation of Alert object.
+        """
+
+        dict = {}
+        dict["topic"] = self.topic
+        dict["condition"] = self.condition
+        dict["email"] = self.email
+        dict["period_minimum"] = self.period_minimum
+        dict["period_maximum"] = self.period_maximum
+
+        return dict
+
+    def from_dict(self, data) -> None:
+        """
+        Converts dictionary representation to Alert object.
+
+        Args:
+            dict (dict): Dictionary representation of Alert object.
+        """
+
+        # Error checks
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
+
+        self.topic = data["topic"]
+        self.condition = data["condition"]
+        self.email = data["email"]
+        self.period_minimum = data["period_minimum"]
+        self.period_maximum = data["period_maximum"]
+
+    def to_json(self) -> str:
+        """
+        Converts Alert object to JSON string representation.
+
+        Returns:
+            str: JSON representation
+        """
+
+        data = self.to_dict()
+        data["period_minimum"] = str(data["period_minimum"].total_seconds())
+        data["period_maximum"] = str(data["period_maximum"].total_seconds())
+
+        jsonstr = json.dumps(data)
+        return jsonstr
+
+    def from_json(self, jsonstr: str) -> None:
+        """
+        Converts JSON string representation to Alert object.
+
+        Args:
+            json (str): JSON representation
+        """
+
+        # Error checks
+        if not isinstance(jsonstr, str):
+            raise TypeError("JSON must be a string.")
+
+        data = json.loads(jsonstr)
+        data["period_minimum"] = dt.timedelta(seconds=float(data["period_minimum"]))
+        data["period_maximum"] = dt.timedelta(seconds=float(data["period_maximum"]))
+
+        return self.from_dict(data)
+
 
 class AlertManager:
     """
@@ -365,6 +435,84 @@ class AlertManager:
         self.logger.info(f"Message received: {message}")
         for alert in self._alerts:
             alert.check(message, self.gmail)
+
+    def to_dict(self) -> dict:
+        """
+        Converts AlertManager object to dictionary representation.
+
+        Returns:
+            dict: Dictionary representation of AlertManager object.
+        """
+
+        dict = {}
+        dict["alerts"] = [alert.to_dict() for alert in self._alerts]
+
+        return dict
+
+    def from_dict(self, data) -> None:
+        """
+        Converts dictionary representation to AlertManager object.
+
+        Args:
+            dict (dict): Dictionary representation of AlertManager object.
+        """
+
+        # Error checks
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
+
+        for alert in data["alerts"]:
+            self.add(Alert().from_dict(alert))
+
+    def to_json(self) -> str:
+        """
+        Converts AlertManager object to JSON string representation.
+
+        Returns:
+            str: JSON representation
+        """
+
+        data = {}
+        data["alerts"] = [alert.to_json() for alert in self._alerts]
+
+        jsonstr = json.dumps(data)
+
+        return jsonstr
+
+    def from_json(self, jsonstr: str) -> None:
+        """
+        Converts JSON string representation to AlertManager object.
+
+        Args:
+            json (str): JSON representation
+        """
+
+        # Error checks
+        if not isinstance(jsonstr, str):
+            raise TypeError("JSON must be a string.")
+
+        data = json.loads(jsonstr)
+        self.from_dict(data)
+
+    def save(self, filename: str) -> None:
+        """
+        Saves AlertManager object to file as JSON.
+
+        Args:
+            filename (str): Filename.
+        """
+
+        jsonstr = self.to_json()
+        with open(filename, "w") as f:
+            f.write(jsonstr)
+
+    def load(self, filename: str):
+        """
+        Loads AlertManager object from JSON file.
+
+        Args:
+            filename (str): File to load.
+        """
 
 
 if __name__ == "__main__":
