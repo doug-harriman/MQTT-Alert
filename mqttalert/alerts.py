@@ -560,5 +560,15 @@ if __name__ == "__main__":
         )
     )
 
+    alert_manager.add(
+        Alert(
+            topic="device/home-office-tmp",
+            email="5034490111@mms.att.net",
+            condition="temperature >= 90",
+            period_minimum=dt.timedelta(hours=4),
+            period_maximum=dt.timedelta(days=1),
+        )
+    )
+
     # Run alert manager
     alert_manager.run()
