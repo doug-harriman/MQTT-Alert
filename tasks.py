@@ -11,7 +11,7 @@ def mqtt(ctx, ipaddr: str = "192.168.0.120", port: int = 1885):
         port (int, optional): IP Port of MQTT broker . Defaults to 1885.
     """
 
-    from mqttemail.mqtt import Mqtt
+    from mqttalert import Mqtt
 
     print(f"Monitoring MQTT traffic on {ipaddr}:{port}", flush=True)
     m = Mqtt(ipaddr=ipaddr, port=port)
@@ -38,7 +38,7 @@ def email(
         port (int, optional): Server port. Defaults to 587.
     """
 
-    from mqttemail.gmail import Gmail
+    from mqttalert import Gmail
 
     print(f"Sending email to {email}", flush=True)
     g = Gmail(server=server, port=port)
@@ -68,7 +68,7 @@ def sms(
 
     """
 
-    from mqttemail.gmail import Gmail, CARRIERS
+    from mqttalert import Gmail
 
     print(f"Sending SMS to {number}", flush=True)
     g = Gmail(server=server, port=port)
@@ -81,7 +81,7 @@ def carriers(cxt):
     Lists supported SMS carriers (US only).
     """
 
-    from mqttemail.gmail import CARRIERS
+    from mqttalert import CARRIERS
 
     print("Supported SMS carrier names:")
     for carrier in CARRIERS:
