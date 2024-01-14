@@ -31,16 +31,7 @@ def sms_address(number: Union[str, int] = None, carrier: str = None):
     Returns:
         str: Email address.
     """
-
-    # Mapping of carrier names to email servers.
-    # As of 2024-01-13, US only.
-    CARRIERS = {
-        "ATT": "@mms.att.net",
-        "TMobile": "@tmomail.net",
-        "Verizon": "@vtext.com",
-        "Sprint": "@messaging.sprintpcs.com",
-    }
-
+    global CARRIERS
     carrier_names = ", ".join(CARRIERS.keys())
 
     if carrier is None:
