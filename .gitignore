@@ -4,3 +4,7 @@
 # Python
 __pycache__/*
 mqttalert/__pycache__/*
+
+# Logging
+*.log
+mqttalert/*.log
