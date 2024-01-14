@@ -257,7 +257,8 @@ class Alert:
         if not self.email:
             return
 
-        body = f"Alert on: {self.topic}.\n"
+        # Use message here uncase subscribed to wildcard.
+        body = f"Alert on: {message.topic}.\n"
         body += f"Variable: {self.condition_variable} = {val}.\n"
         body += (
             f"Satifies alert condition: {self.condition_variable} {self.condition_expr}"
@@ -525,15 +526,6 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    # Create alert
-    alert = Alert(
-        topic="device/test",
-        email="5034490111@mms.att.net",
-        condition="temperature > 10",
-        period_minimum=dt.timedelta(seconds=10),
-        period_maximum=dt.timedelta(minutes=1),
-    )
-
     # Create MQTT client
     mqtt = Mqtt(ipaddr="192.168.0.120", port=1885)
 
@@ -544,7 +536,25 @@ if __name__ == "__main__":
     alert_manager = AlertManager(mqtt=mqtt, gmail=gmail)
 
     # Add alert to manager
-    alert_manager.add(alert)
+    alert_manager.add(
+        Alert(
+            topic="device/#",
+            email="5034490111@mms.att.net",
+            condition="temperature < 33",
+            period_minimum=dt.timedelta(hours=1),
+            period_maximum=dt.timedelta(days=1),
+        )
+    )
+
+    alert_manager.add(
+        Alert(
+            topic="device/#",
+            email="5034490111@mms.att.net",
+            condition="temperature < 40",
+            period_minimum=dt.timedelta(hours=4),
+            period_maximum=dt.timedelta(days=1),
+        )
+    )
 
     # Run alert manager
     alert_manager.run()
