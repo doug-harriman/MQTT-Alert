@@ -267,6 +267,7 @@ class Gmail:
         Args:
             recipient (str): Recipient email address.
             message (str): Message to send.
+            subject (str,optional): Message subject.
         """
         if self._smtp_server is None:
             raise ValueError("GMail server not initialized")
