@@ -74,6 +74,13 @@ def sms_address(number: Union[str, int] = None, carrier: str = None):
 class Gmail:
     """
     GMail email helper class.
+    Will use keyring stored Google account email address and application password if available.
+
+    Google app password info: https://support.google.com/accounts/answer/185833
+
+    Keyring setup:
+    >> keyring set Google email
+    >> keyring set Google app_password
     """
 
     def __init__(
@@ -211,7 +218,7 @@ class Gmail:
         Get SMTP server object.
 
         Returns:
-            _type_: _description_
+            smtplib.SMTP: SMTP server object.
         """
 
         return self._smtp_server
