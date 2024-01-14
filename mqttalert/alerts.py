@@ -6,10 +6,8 @@ import json
 import logging
 import re
 
-# from mqttemail.mqtt import MqttMessage, Mqtt
-# from mqttemail.gmail import Gmail
-from mqtt import MqttMessage, Mqtt
-from gmail import Gmail
+from .mqtt import MqttMessage, Mqtt
+from .gmail import Gmail
 
 # TODO: Load config from file.
 

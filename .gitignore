@@ -1,9 +1,11 @@
 # Editor
 .vscode/*
+.mypy_cache/*
 
 # Python
 __pycache__/*
 mqttalert/__pycache__/*
+mqttalert.egg-info/*
 
 # Logging
 *.log

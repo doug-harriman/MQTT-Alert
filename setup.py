@@ -9,7 +9,7 @@ LONG_DESCRIPTION = (
 # Setting up
 setup(
     # the name must match the folder name 'verysimplemodule'
-    name="mqttemail",
+    name="mqttalert",
     version=VERSION,
     author="Doug Harriman",
     author_email="doug.harriman@gmail.com",
@@ -19,9 +19,7 @@ setup(
     install_requires=[
         "keyring",
         "keyrings.alt",
-        "smtplib",
         "ipaddress",
-        "json",
         "paho-mqtt",
         "invoke",
     ],  # add any additional packages that
