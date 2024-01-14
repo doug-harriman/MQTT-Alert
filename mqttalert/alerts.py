@@ -142,6 +142,9 @@ class Alert:
         if not isinstance(value, str):
             raise TypeError("MQTT topic must be a string.")
 
+        if "#" in value:
+            raise ValueError("MQTT topic cannot contain wildcard '#'.")
+
         self._topic = value
 
     @property
