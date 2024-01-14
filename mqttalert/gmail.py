@@ -211,7 +211,7 @@ class Gmail:
         Get SMTP server object.
 
         Returns:
-            _type_: _description_
+            smtplib.SMTP: SMTP server object.
         """
 
         return self._smtp_server
